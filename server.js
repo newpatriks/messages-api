@@ -2,10 +2,17 @@ var express     = require('express');
 var app         = express();
 var bodyParser  = require('body-parser');
 var mongoose    = require('mongoose');
-var mongoose    = require('mongoose');
 
 var Message     = require('./message');
-var MongoDB     = require('./mongodb');
+var mongodbURL  = process.env.MONGODB_URI || 'mongodb://localhost:27017/terete-api';
+
+mongoose.connect(mongodbURL);
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'mongoose > connection error: ', mongodbURL));
+db.once('open', function() {
+    console.log('mongoose > connection successful!');
+});
+
 
 
 // configure app to use bodyParser()

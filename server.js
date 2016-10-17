@@ -2,10 +2,9 @@ var express     = require('express');
 var app         = express();
 var bodyParser  = require('body-parser');
 var mongoose    = require('mongoose');
-
 var Message     = require('./message');
 
-var uristring = process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb:27017/localhost/terete-api';
+var uristring = process.env.MONGODB_URI || 'mongodb:27017/localhost/terete-api';
 
 mongoose.connect(uristring, function (err, res) {
     if (err) {

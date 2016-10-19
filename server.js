@@ -18,26 +18,24 @@ mongoose.connect(uristring, function (err, res) {
     }
 });
 
-var server = require('http').createServer(app).listen(port_socket, function() {
-    console.log('[Sockets] listening on '+ port_socket);
-});
-var io = require('socket.io').listen(server);
-io.set('transports', [ 'websocket' ]);
-io.on('connection', function(socket) {
-    console.log('[Sockets] Client connected');
-    socket.on('disconnect', function(){
-        console.log('[Sockets] Client disconnected');
-    });
-});
+// var server = require('http').createServer(app).listen(port_socket, function() {
+//     console.log('[Sockets] listening on '+ port_socket);
+// });
+// var io = require('socket.io').listen(server);
+// io.set('transports', [ 'websocket' ]);
+// io.on('connection', function(socket) {
+//     console.log('[Sockets] Client connected');
+//     socket.on('disconnect', function(){
+//         console.log('[Sockets] Client disconnected');
+//     });
+// });
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(function(req, res, next) {
-    res.header('Access-Control-Allow-Credentials: false');
-    res.header("Access-Control-Allow-Origin", "http://annafuste.com");
-    res.header("Access-Control-Allow-Origin", "http://localhost:8080");
+    res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
@@ -62,12 +60,12 @@ router.route('/message')
 
             res.json({ status: '200', message: 'Message created!', data: message.id });
 
-            Message.findOne({_id: message.id}, function(err, msg) {
-                if (err)
-                    res.send(err);
-
-                io.emit('update', msg);
-            });
+            // Message.findOne({_id: message.id}, function(err, msg) {
+            //     if (err)
+            //         res.send(err);
+            //
+            //     io.emit('update', msg);
+            // });
         });
     })
 

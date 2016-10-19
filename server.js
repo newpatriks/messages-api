@@ -7,9 +7,6 @@ var app         = express();
 var port        = process.env.PORT || 9000;        // set our port
 var port_socket = process.env.PORT_SOCKET || 3000;
 
-//Allow Cross Domain Requests
-io.set('transports', [ 'websocket' ]);
-
 var uristring = process.env.MONGODB_URI || 'mongodb://localhost:27017/terete-api';
 
 
@@ -25,7 +22,7 @@ var server = require('http').createServer(app).listen(port_socket, function() {
     console.log('[Sockets] listening on '+ port_socket);
 });
 var io = require('socket.io').listen(server);
-
+io.set('transports', [ 'websocket' ]);
 io.on('connection', function(socket) {
     console.log('[Sockets] Client connected');
     socket.on('disconnect', function(){

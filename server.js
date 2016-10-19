@@ -1,10 +1,15 @@
 var express     = require('express');
-var app         = express();
+var socketIO    = require('socket.io');
 var bodyParser  = require('body-parser');
 var mongoose    = require('mongoose');
 var Message     = require('./message');
+var path        = require('path');
+var app         = express();
+var port        = process.env.PORT || 9000;        // set our port
+var port_socket = process.env.PORT_SOCKET || 3000;
 
-var uristring = process.env.MONGODB_URI || 'mongodb:27017/localhost/terete-api';
+var uristring = process.env.MONGODB_URI || 'mongodb://localhost:27017/terete-api';
+
 
 mongoose.connect(uristring, function (err, res) {
     if (err) {
@@ -14,6 +19,25 @@ mongoose.connect(uristring, function (err, res) {
     }
 });
 
+
+var index = path.join(__dirname, 'index.html');
+var server = express()
+    .use(function(req, res) {
+        console.log('1');
+        res.sendFile(index);
+    })
+    .listen(port_socket, function() {
+        console.log('2');
+        console.log('Listening on '+ port_socket);
+    });
+
+var io = socketIO(server);
+io.on('connection', function(socket) {
+    console.log('Client connected');
+    socket.on('disconnect', function(){
+        console.log('Client disconnected');
+    });
+});
 
 // configure app to use bodyParser()
 // this will let us get the data from a POST
@@ -25,8 +49,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-var port = process.env.PORT || 9000;        // set our port
-
 
 var router = express.Router();              // get an instance of the express Router
 
@@ -36,20 +58,24 @@ router.get('/', function(req, res) {
 
 router.route('/message')
     .post(function(req, res) {
-        Message.findOne({id: req.body.id}, function(err, message) {
-            message = new Message();      // create a new instance of the Message model
-            message.name = req.body.name;
-            message.msg = req.body.msg;
-            message.pic = req.body.pic;
+        message = new Message();      // create a new instance of the Message model
+        message.name = req.body.name;
+        message.msg = req.body.msg;
+        message.pic = req.body.pic;
 
-            message.save(function(err) {
+        message.save(function(err) {
+            if (err)
+                res.send(err);
+
+            res.json({ status: '200', message: 'Message created!', data: message.id });
+
+            Message.findOne({_id: message.id}, function(err, msg) {
                 if (err)
                     res.send(err);
 
-                res.json({ status: '200', message: 'Message created!', data: message.id });
+                io.emit('update', msg);
             });
         });
-
     })
 
     .get(function(req, res) {

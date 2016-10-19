@@ -20,7 +20,7 @@ mongoose.connect(uristring, function (err, res) {
 });
 
 
-var index = path.join('localhost:8080/', 'index.html');
+var index = path.join('http://localhost:8080/', 'index.html');
 var server = express()
     .use(function(req, res) {
         console.log('1');

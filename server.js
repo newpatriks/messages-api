@@ -19,23 +19,16 @@ mongoose.connect(uristring, function (err, res) {
     }
 });
 
-
-var index = path.join('http://localhost:8080/', 'index.html');
 var server = express()
-    .use(function(req, res) {
-        console.log('1');
-        res.sendFile(index);
-    })
     .listen(port_socket, function() {
-        console.log('2');
-        console.log('Listening on '+ port_socket);
+        console.log('[Sockets] listening on '+ port_socket);
     });
 
 var io = socketIO(server);
 io.on('connection', function(socket) {
-    console.log('Client connected');
+    console.log('[Sockets] Client connected');
     socket.on('disconnect', function(){
-        console.log('Client disconnected');
+        console.log('[Sockets] Client disconnected');
     });
 });
 
@@ -46,6 +39,7 @@ app.use(bodyParser.json());
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
   next();
 });
 

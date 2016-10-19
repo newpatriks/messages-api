@@ -1,5 +1,4 @@
 var express     = require('express');
-var socketIO    = require('socket.io');
 var bodyParser  = require('body-parser');
 var mongoose    = require('mongoose');
 var Message     = require('./message');
@@ -7,6 +6,9 @@ var path        = require('path');
 var app         = express();
 var port        = process.env.PORT || 9000;        // set our port
 var port_socket = process.env.PORT_SOCKET || 3000;
+
+//Allow Cross Domain Requests
+io.set('transports', [ 'websocket' ]);
 
 var uristring = process.env.MONGODB_URI || 'mongodb://localhost:27017/terete-api';
 
@@ -19,12 +21,11 @@ mongoose.connect(uristring, function (err, res) {
     }
 });
 
-var server = express()
-    .listen(port_socket, function() {
-        console.log('[Sockets] listening on '+ port_socket);
-    });
+var server = require('http').createServer(app).listen(port_socket, function() {
+    console.log('[Sockets] listening on '+ port_socket);
+});
+var io = require('socket.io').listen(server);
 
-var io = socketIO(server);
 io.on('connection', function(socket) {
     console.log('[Sockets] Client connected');
     socket.on('disconnect', function(){

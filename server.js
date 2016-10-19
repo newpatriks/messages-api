@@ -37,7 +37,7 @@ app.use(bodyParser.json());
 app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Credentials: false');
     res.header("Access-Control-Allow-Origin", "http://annafuste.com");
-    res.header("Access-Control-Allow-Origin", "http://localhost");
+    res.header("Access-Control-Allow-Origin", "http://localhost:8080");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
